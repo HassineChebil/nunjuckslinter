@@ -1,0 +1,29 @@
+{
+  "name": "nunjucklinter",
+  "version": "1.0.0",
+  "description": "A linter for nunjuck templating engines",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "node dist/index.js lint"
+  },
+  "author": "Hassine Chebil",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "njklint": "./dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "glob": "^11.0.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
+  },
+  "volta": {
+    "node": "22.13.1"
+  }
+}
