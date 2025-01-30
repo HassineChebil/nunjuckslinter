@@ -1,5 +1,5 @@
-import { BlockPattern, BlockStackItem, LinterInterface, SyntaxBalanceState } from "../types";
-import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS, SYNTAX_PATTERNS } from "../patterns";
+import { BlockPattern, BlockStackItem, LinterInterface, SyntaxBalanceState } from "../interfaces/types";
+import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS, SYNTAX_PATTERNS } from "../constants/patterns";
 
 export const createLintingRules = (linter: LinterInterface): Record<string, (content: string, filename: string) => void> => ({
     checkBlockStructure: (content: string, filename: string): void => {

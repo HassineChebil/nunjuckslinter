@@ -36,7 +36,7 @@ export interface BlockStackItem {
   hasEndDash?: boolean;
 }
 
-export type BlockType = 'if' | 'for' | 'macro' | 'block' | 'set' | 'filter' | 'call' | 'asyncEach' | 'asyncAll' | 'verbatim';
+export type BlockType = 'if' | 'for' | 'macro' | 'block' | 'set' | 'filter' | 'call' | 'asyncEach' | 'asyncAll';
 
 export interface BlockPattern {
     type: BlockType;
@@ -60,7 +60,7 @@ export interface SyntaxBalanceState {
   commentDepth: number;
 }
 
-interface DelimiterPosition {
+export interface DelimiterPosition {
   line: number;
   count: number;
 }

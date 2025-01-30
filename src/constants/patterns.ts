@@ -1,4 +1,4 @@
-import { BlockPattern } from "./types";
+import { BlockPattern } from "../interfaces/types";
 
 export const BLOCK_PATTERNS: Record<string, BlockPattern> = {
     block: {

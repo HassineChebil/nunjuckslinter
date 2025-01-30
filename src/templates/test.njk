@@ -9,7 +9,7 @@
                 <p>{{ user.name }} est majeur</p> 
             {% endif %}
         </div>
-    {% endfor %}  
+    {% endfor %}
     {# Erreur: variable non définie et filtre mal écrit #}
     <p>{{ undefined_var|upppercase }}</p>
 
@@ -59,3 +59,7 @@ The result is
 {% import "forms.html" as forms %}
 
 {% from "forms.html" import field, label as description %}
+
+{# {% if hfdssd %} #}
+
+{% endif %}
