@@ -1,0 +1,61 @@
+{% extends "base.html" %}  {# Erreur: devrait être 'extends' #}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {% for user in users %} {# Erreur: parenthèse en trop #}
+        <div class="user">
+            {% if user.age %}
+                <p>{{ user.name }} est majeur</p> 
+            {% endif %}
+        </div>
+    {% endfor %}  
+    {# Erreur: variable non définie et filtre mal écrit #}
+    <p>{{ undefined_var|upppercase }}</p>
+
+    {% include 'footer.html' %}
+
+{% endblock content %}
+
+{% filter title %}
+may the force be with you
+{% endfilter %}
+
+{% filter replace("force", "forth") %}
+may the force be with you
+{% endfilter %}
+
+{% call add(1, 2) -%}
+The result is
+{%- endcall %}
+
+{% verbatim %}
+
+<h1>Posts</h1>
+<ul>
+{% asyncEach item in items %}
+  {% include "item-template.html" %}
+{% endeach %}
+</ul>
+
+<h1>Posts</h1>
+<ul>
+{% asyncAll item in items %}
+  <li>{{ item.id | lookup }}</li>
+{% endall %}
+</ul>
+
+{% for item in items %}
+{% include "item.html" %}
+{% endfor %}
+
+{% macro field(name, value='', type='text') %}
+<div class="field">
+  <input type="{{ type }}" name="{{ name }}"
+         value="{{ value | escape }}" />
+</div>
+{% endmacro %}
+
+{% import "forms.html" as forms %}
+
+{% from "forms.html" import field, label as description %}

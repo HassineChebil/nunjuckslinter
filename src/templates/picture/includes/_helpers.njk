@@ -1,0 +1,225 @@
+{% import "../../utils/utils.njk" as utils with context %}
+
+{#  Param:
+    simpleImg(params: ImgParams)
+#}
+{% macro simpleImg(params) %}
+
+{% set params = params | defaultsWith({
+    fallback: params.path~"."~params.fallbackExt if params.fallbackExt else params.src,
+    importance: "low"
+}) %}
+
+{% set srcset = "" %}
+{% if params.density %}
+    {% set srcset = genDensity(params.density, params, params.size[0]) %}
+{% elif params.fallback != params.src %}
+    {% set srcset = 'srcset="'~params.src~'"' %}
+{% endif %}
+{% set style = [] %}
+
+{# {% if params.fallbackColor and params.fallback != params.src %} #}
+{% if params.fallbackColor %}
+    {% set style = style.concat("background-color: "~params.fallbackColor) %}
+{% endif %}
+{% if params.hash %}
+    {% set style = style.concat("background-image: url(data:image/png;base64,"~params.hash~")") %}
+    {% set style = style.concat("background-size: cover") %}
+    {% set style = style.concat("background-position: center") %}
+{% endif %}
+{% if params.focus %}
+    {% set style = style.concat("object-position: "~params.focus) %}
+    {% set style = style.concat("background-position: "~params.focus) %}
+{% endif %}
+{% if params.style %}
+    {% set style = style.concat(params.style) %}
+{% endif %}
+
+<img
+    src="{{ params.fallback }}"
+    {{ srcset | safe }}
+    width="{{ params.size[0] }}"
+    height="{{ params.size[1] }}"
+    class="{{ params.class }}"
+    alt="{{ params.alt }}"
+    {{ genPriority(params.importance) | safe }}
+    {% if style|length != 0 %}
+    style="{{ style | join('; ') | safe }}"
+    {% endif %}
+    {{ utils.expandRest(params) | safe }}
+>
+
+{% endmacro %}
+
+
+{#  Param:
+    genPriority(importance: ImgImportance)
+#}
+{% macro genPriority(importance) -%}
+
+{% if importance == "vfs" %}
+    loading="eager"
+    fetchpriority="high"
+    decoding="sync"
+{% elif importance == "dfs" %}
+    loading="eager"
+    fetchpriority="low"
+    decoding="async"
+{% else %}
+    loading="lazy"
+{% endif %}
+
+{%- endmacro %}
+
+
+{#  Param:
+    genDensity(density: ImgDensity, params: ImgParams, width: number)
+#}
+{% macro genDensity(density, params, width) -%}
+
+{% set srcset %}
+    srcset="{{ params.src }} {{ width }}w,
+            {{ params.path }}@2x.{{ params.ext }} {{ width * 2 }}w,
+            {{ params.path }}@3x.{{ params.ext }} {{ width * 3 }}w"
+{% endset%}
+{% set sizes = [] %}
+
+{% if density != true %}
+    {% if density | first is string %}
+        {% if density | length == 2 %}
+            {% set density = [["mobile", density[0]], ["desktop", density[1]]] %}
+        {% elif density | length == 3 %}
+            {% set density = [["mobile", density[0]], ["tablet", density[1]], ["desktop-strict", density[2]]] %}
+        {% endif %}
+    {% endif %}
+
+    {% for ssz, rsz in density %}
+        {% set sizes = (sizes.push((genScreenSize(ssz)|trim)~" "~rsz), sizes) %}
+    {% endfor %}
+
+{% endif %}
+
+{{ srcset | safe }}
+{% if sizes | length > 0 %}
+    sizes="{{ sizes | join(", ") | safe }}"
+{% endif %}
+
+{%- endmacro %}
+
+
+{#  Param:
+    genScreenSize(ssz: ScreenSize)
+#}
+{% macro genScreenSize(ssz) -%}
+
+{% set tabStart = 768 %}
+{% set tabEnd = 1024 %}
+{% set left = -1 %}
+{% set right = -1 %}
+
+{# Find min and max #}
+{% if ssz == "mobile" -%}
+    {% set right = tabStart - 1 %}
+{% elif ssz == "tablet" %}
+    {% set left = tabStart %}
+    {% set right = tabEnd %}
+{% elif ssz == "desktop" %}
+    {% set left = tabStart %}
+{% elif ssz == "desktop-strict" %}
+    {% set left = tabEnd + 1 %}
+{% elif ssz > 0 %}
+    {% set left = ssz %}
+{% elif ssz < 0 %}
+    {% set right = ssz %}
+{% else %}
+    {% set left = ssz[0] %}
+    {% if ssz[0] == "mobile" or ssz[0] == "desktop" %}
+        {% set left = tabStart %}
+    {% elif ssz[0] == "tablet" or ssz[0] == "desktop-strict" %}
+        {% set left = tabEnd + 1 %}
+    {% endif %}
+    {% set right = ssz[1] %}
+    {% if ssz[1] == "mobile" or ssz[1] == "tablet" %}
+        {% set right = tabStart - 1 %}
+    {% elif ssz[1] == "desktop" or ssz[1] == "desktop-strict" %}
+        {% set right = tabEnd %}
+    {% endif %}
+{%- endif %}
+
+{# Gen string #}
+{% set res = "" %}
+{% if left != -1 -%}
+    {% set res = "(min-width: "~left~"px)" %}
+{%- endif %}
+{% if right != -1 -%}
+    {% if left != -1 %}
+        {% set res = res~" and " %}
+    {% endif %}
+    {% set res = res~"(max-width: "~right~"px)" %}
+{%- endif %}
+
+{{ res }}
+
+{%- endmacro %}
+
+
+
+{#  Param:
+    genSources(params: ImgParams)
+#}
+{% macro genSources(params) -%}
+
+{% set screens = params.screens %}
+{% if screens is string %}
+    {% set screens = [{
+        screen: screens,
+        size: params.size
+    }] %}
+{% elif screens | first is not mapping %}
+    {% set screens = [{
+        screen: "mobile",
+        size: (screens[0] if screens[0] != 0 else params.size)
+    }, {
+        screen: ("desktop" if screens | length == 2 else "tablet"),
+        size: (screens[1] if screens[1] != 0 else params.size)
+    }] %}
+    {% if screens | length == 3 %}
+        {% set screens = (screens.push({
+            screen: "desktop-strict",
+            size: (screens[2] if screens[2] != 0 else params.size)
+        }), screens) %}
+    {% endif %}
+{% endif %}
+
+{% for screen in screens %}
+    {% set srcset = "" %}
+    {% if screen.density %}
+        {% set srcset = genDensity(screen.density, params, screen.size[0]) %}
+    {% else %}
+        {% set mod = screen.screen if screens | length > 1 else "" %}
+        {% set mod = "desktop" if mod == "desktop-strict" else mod %}
+        {% set mod = "-"~mod if mod != "" else mod %}
+        {% set mod = screen.mod if screen.mod else mod %}
+        {% set srcset = 'srcset="'~params.path~mod~"."~params.ext~'"' %}
+    {% endif %}
+    <source
+        media="{{ genScreenSize(screen.screen) | trim | safe }}"
+        width="{{ screen.size[0] }}"
+        height="{{ screen.size[1] }}"
+        {{ srcset | safe }}
+    >
+{% endfor %}
+
+{# {% set shouldLoadColor = params.fallbackColor and params.fallback == params.src %} #}
+{# screens | length == 1 or shouldLoadColor }}" #}
+{% if screens | length == 1 %}
+    {% set transparentImg = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjwvc3ZnPg==" %}
+    <source
+        width="1"
+        height="1"
+        srcset="{{ transparentImg }}"
+    >
+    {# srcset="{{ params.fallbackColor | colorToSrc if shouldLoadColor else transparentImg }}" #}
+{% endif %}
+
+{%- endmacro %}

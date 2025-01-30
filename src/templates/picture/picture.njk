@@ -1,0 +1,296 @@
+{% import "../utils/utils.njk" as utils with context %}
+{% import "./includes/_helpers.njk" as helpers with context %}
+
+{#  Param:
+    picture(params: ImgParams, defaults: SimplifiedImgParams)
+
+@param defaults - To be used when params are forwarded by another component, and it wishes to alter the default value.
+
+* @example:
+    picture({
+        src: "rsc/contrib/img.png",
+        size: [240, 240]
+    })
+    picture({
+        src: "rsc/contrib/img.webp",
+        size: [240, 240],
+        screens: "desktop",     - Combine this with a css solution for the best performance.
+        class: "desktop-only"
+    })
+    picture({
+        src: "rsc/contrib/img.webp",
+        size: [1400, 520],
+        fallbackExt: "jpg",
+        screens: [[800, 300], 0]
+    })
+    picture({
+        src: "rsc/contrib/img.webp",
+        size: [500, 500],
+        density: ["100vw", "50vw"],
+        alt: "Some SEO alt",
+        aria: {
+            hidden: "true"
+        }
+    })
+
+
+* @type ImgParams:
+    {string}            src
+    {string}            class
+    {string}            alt - If the alt is only for seo, please set an aria-hidden.
+    {string}            id
+    {ImgSize}           size - The file img [width, height] (not the rendered size).
+    {ImgImportance}     importance [="low"]
+    {string}            fallbackExt - Will replace the extension for the fallback image
+    {string}            fallback - Will override the fallback src
+    {string}            fallbackColor - Sets a background-color, for loading or hidden screen sizes.
+    {ScreensSupport}    screens - Specify different images for diverse screen sizes.
+                                  Use this in conjunction with hidding images with css, being more optimized.
+    {ImgDensity}        density - When the image has a different set of resolutions (@2x, @3x).
+    {Position}          focus - Change the object-position css property.
+    {object}            aria - Any aria key, value. (example: aria: { hidden: "true" })
+    {object}            data - Any data key, value.
+    {object}            other - Any other attribute. (example: other: { role: "presentation" })
+
+
+* @type Position:
+    "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "center"
+
+* @type ImgSize: [number, number] - For [width, height]
+
+* @type ImgImportance:
+    "low"   - Corresponds to 99% of images, is the default, for non critical images.
+              Use mostly this setting and do NOT overuse the others.
+    | "vfs" - Visible First Screen,
+              For highly important images, like the hero banner.
+    | "dfs" - Displayed First Screen,
+              For images present on the first screen, but not yet visible (like images in the header navigation).
+
+* @type ImgDensity:
+    boolean                     - Will auto generate the density srcset.
+    | [string, string]          - Give a hint of displayed width for mobile/desktop.
+    | [string, string, string]  - Give a hint of displayed width for mobile/tablet/desktop-strict.
+    | [ScreenSize, string][]    - For each custom screen size, give a hint of the displayed width.
+    
+    @description:
+        Here the type string represents the approximate (displayed/rendered) width of the image (such as “50vw”).
+        An image can have different sizes to match screens with different pixel densities.
+        The aim is to provide lower quality images for lower resolution screens, and higher quality images for higher resolution screens.
+        But all images must have the same aspect ratio.
+
+    @example:
+        density: true -> (with 50 of width) srcset="path.ext 50w, path@2x.ext 100w, path@3x.ext 150w"
+        density: ["100vw", "50vw"]
+            -> (with 50 of width)
+            srcset="path.ext 50w, path@2x.ext 100w, path@3x.ext 150w"
+            sizes="(max-width: 767px) 100vw, (min-width: 768px) 50vw"
+            - Here the browser knows that on mobile the image takes the width of the screen,
+            - and on desktop it takes only half of the screen
+    
+    @ressource:
+        https://www.youtube.com/watch?v=2QYpkrX2N48
+
+
+* @type ScreensSupport:
+    ScreenSize                                      - The image will be displayed only for this screen size.
+    | [ImgSizeOrRef, ImgSizeOrRef]                  - Give the file sizes of the images for [mobile, desktop].
+    | [ImgSizeOrRef, ImgSizeOrRef, ImgSizeOrRef]    - Give the file sizes of the images for [mobile, tablet, desktop-strict].
+    | ScreenSizeDetailed[]                          - Use custom breakpoints, or add density specifications.
+
+    @description:
+        This tool lets you define different sources according to screen size.
+        The aim is to provide responsive images for different devices.
+        With this tool, each image is independent and can have different aspect ratios.
+
+    @example:
+        screens: "desktop" -> Will load the image only for desktop screens.
+        screens: [[80, 50], 0] -> Will load the image for mobile with 80 for the width and 50 for the height,
+                                  Will use the size of the default image.
+    
+    @ressources:
+        https://www.youtube.com/watch?v=Rik3gHT24AM
+
+* @type ImgSizeOrRef: Size | 0 - If set to 0 it will use the default size of the image
+
+* @type ScreenSizeDetailed:
+    {ScreenSize}    screen
+    {ImgSizeOrRef}  size
+    {ImgDensity}    density
+    {string}        mod     - Change the default name modifier (exemple: "-mobile");
+
+* @type ScreenSize:
+    "mobile"                    - (max-width: 767px)
+    | "tablet"                  - (min-width: 768px) and (max-width: 1024px)
+    | "desktop"                 - (min-width: 768px)
+    | "desktop-strict"          - (min-width: 1025px)
+    | number                    - (min-width: <num>)
+    | -number                   - (max-width: <num>)
+    | [ScreenSize, ScreenSize]  - (min-width: <res>) and (max-width: <res>) - No negative
+
+
+
+
+
+picture({
+    src: "my/path.webp",
+    size: (500, 500),
+    density: true,
+    density: ("100vw", "50vw"),
+    density: [[1224, "50vw"], [768, "70vw"], [-768, "100vw"]],
+    fallbackExt: "jpg"
+})
+
+picture({
+    src: "my/path.webp",
+    size: [1500, 1500],
+    fallbackExt: "jpg",
+    screens: ([500, 250], 0)
+})
+
+picture({
+    src: "my/path.webp",
+    width: [1500, 1500],
+    fallbackExt: "jpg",
+    screens: [{
+        size: "mobile",
+        width: 200,
+        density: true
+    }, {
+        size: ["mobile", 1000],
+        width: 534
+    }, {
+        size: 1000,
+        width: 1534
+    }]
+})
+
+#}
+{% macro picture(params) -%}
+{%- set _ = (utils.stackPush("picture")) -%}
+
+{% if params and params.src and params.size %}
+    {%- set _ = (pictureCheckParams(params)) -%}
+    {{ pictureImpl(params) | safe }}
+{% endif %}
+
+{%- set _ = (utils.stackPop()) -%}
+{%- endmacro %}
+
+
+{#  Param:
+    pictureImpl(params: ImgParams)
+#}
+{% macro pictureImpl(params) -%}
+
+{# Extract Path and File extension #}
+{% set params = (params | editAttr("src", params.src | imgUrl | trim), params) %}
+{% set path = params.src %}
+{% set ext = "" %}
+{% if (path.slice(-4) | first) == "." %}
+    {% set ext = path.slice(-3) %}
+    {% set path = path.slice(0, -4) %}
+{% elif (path.slice(-5) | first) == "." %}
+    {% set ext = path.slice(-4) %}
+    {% set path = path.slice(0, -5) %}
+{% endif %}
+{% set params = (params | editAttr("ext", ext), params) %}
+{% set params = (params | editAttr("path", path), params) %}
+
+{% if params.screens %}
+    <picture>
+        {{ helpers.genSources(params) }}
+{% endif %}
+
+{{ helpers.simpleImg(params) }}
+
+{% if params.screens %}
+    </picture>
+{% endif %}
+
+{%- endmacro %}
+
+
+{#  Param:
+    pictureCheckParams(params: Params)
+#}
+{% macro pictureCheckParams(params) -%}
+
+{% set screenSizeCheckerPart = ["number", "enum: mobile | tablet | desktop | desktop-strict"] %}
+{% set screenSizeChecker = [] %}
+{% set screenSizeChecker = screenSizeChecker.concat(screenSizeCheckerPart).concat({
+    "0": screenSizeCheckerPart,
+    "1": screenSizeCheckerPart
+}) %}
+{% set densityChecker = ["optional", "boolean", {
+    "0": "string",
+    "1": "string",
+    "2": ["optional", "string"]
+}, [{ "0": screenSizeChecker, "1": "string" }]] %}
+{% set imgSizeOrRefChecker = ["number", { "0": "number", "1": "number" }] %}
+{% set screensChecker = ["optional"] %}
+{% set screensChecker = screensChecker.concat(screenSizeChecker) %}
+{% set screensChecker = screensChecker.concat([{
+    "0": imgSizeOrRefChecker,
+    "1": imgSizeOrRefChecker,
+    "2": ["optional", imgSizeOrRefChecker]
+}, [{
+    screen: screenSizeChecker,
+    size: imgSizeOrRefChecker,
+    density: densityChecker,
+    mod: ["optional", "string"]
+}]]) %}
+
+{% set _ = params | checkParams({
+    src: "string",
+    size: { "0": "number", "1": "number" },
+    importance: ["optional", "enum: low | vfs | dfs"],
+    alt: ["optional", "string"],
+    class: ["optional", "string"],
+    id: ["optional", "string"],
+    fallback: ["optional", "string"],
+    fallbackExt: ["optional", "string"],
+    fallbackColor: ["optional", "string"],
+    focus: ["optional", "enum: top | bottom | left | right | center"],
+    aria: ["optional", "object"],
+    data: ["optional", "object"],
+    other: ["optional", "object"],
+    screens: screensChecker,
+    density: densityChecker
+}, utils.stackGet("picture"), "src/components/_meta_njk/picture/picture.njk") %}
+
+{%- endmacro %}
+
+
+{#  Param:
+    iconOrPicture(icon: string | ImgParams, defaultsForImg: ImgParams, defaultsForIcon: IconParams)
+
+@param: defaultsForImg - Used only if icon is an img.
+
+* @type IconParams:
+    {string}    class
+    {string}    id
+    {object}    aria
+    {object}    data
+    {object}    other
+
+#}
+{% macro iconOrPicture(icon, defaultsForImg={ size: [24, 24] }, defaultsForIcon={}) %}
+{%- set _ = (utils.stackPush("iconOrPicture")) -%}
+
+{% if icon is not string or '.' in icon %}
+    {{ picture(
+        ({ src: icon } if icon is string else icon) | defaultsWith(defaultsForImg)
+    ) }}
+{% else %}
+    <i
+        class="{{ icon | defaultsWith(defaultsForIcon.class | default('')) }}"
+        {{ utils.expandRest(defaultsForIcon) | safe }}
+    ></i>
+{% endif %}
+
+{%- set _ = (utils.stackPop()) -%}
+{% endmacro %}
