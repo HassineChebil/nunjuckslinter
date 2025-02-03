@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { LinterOptions } from '../types';
+import { LinterOptions } from '../interfaces/types';
 
 const CONFIG_FILE_NAMES = [
     'njklint.config.js',
