@@ -21,6 +21,7 @@ export interface RulesConfig {
   checkMacros?: boolean;
   checkSyntax?: boolean;
   checkFilters?: boolean;
+  checkSpacing?: boolean;
   [key: string]: boolean | undefined;
 }
 

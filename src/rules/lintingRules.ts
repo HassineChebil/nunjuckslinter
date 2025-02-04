@@ -399,4 +399,87 @@ export const createLintingRules = (
       }
     });
   },
+  checkSpacing: (content: string, filename: string): void => {
+    const lines = content.split("\n");
+
+    // Patterns to check spacing
+    const expressionBlockPattern = /\{\{([^}]+)\}\}/g;
+    const statementBlockPattern = /\{%(-)?([^}]+?)(-)?%\}/g;
+    const filterChainPattern =
+      /(?:^|\s*)\|[ ]*[a-zA-Z_][a-zA-Z0-9_]*(?:\([^)]*\))?[ ]*/g;
+
+    lines.forEach((line, index) => {
+      if (line.includes("{#")) return;
+
+      // Check expression blocks {{ }}
+      let match;
+      while ((match = expressionBlockPattern.exec(line)) !== null) {
+        const [fullMatch, content] = match;
+        if (!content.startsWith(" ") || !content.endsWith(" ")) {
+          linter.addError(
+            filename,
+            index + 1,
+            `Expression block should have spaces after '{{' and before '}}': "${fullMatch}"`
+          );
+        }
+
+        // Check filter spacing
+        const parts = content.split("|");
+        if (parts.length > 1) {
+          // Skip the first part (variable name)
+          for (let i = 1; i < parts.length; i++) {
+            const part = parts[i];
+            if (!part.startsWith(" ") || !part.endsWith(" ")) {
+              linter.addError(
+                filename,
+                index + 1,
+                `Filter should have spaces before and after: "|${part}|"`
+              );
+            }
+          }
+        }
+      }
+
+      // Check statement blocks {% %}
+      while ((match = statementBlockPattern.exec(line)) !== null) {
+        const [fullMatch, startDash, content, endDash] = match;
+        const hasStartDash = !!startDash;
+        const hasEndDash = !!endDash;
+
+        if (hasStartDash) {
+          if (!content.startsWith(" ")) {
+            linter.addError(
+              filename,
+              index + 1,
+              `Statement block should have a space after '-': "${fullMatch}"`
+            );
+          }
+        } else if (!content.startsWith(" ")) {
+          linter.addError(
+            filename,
+            index + 1,
+            `Statement block should have a space after '{%': "${fullMatch}"`
+          );
+        }
+
+        if (hasEndDash) {
+          if (!content.endsWith(" ")) {
+            console.log(content);
+
+            linter.addError(
+              filename,
+              index + 1,
+              `Statement block should have a space before '-': "${fullMatch}"`
+            );
+          }
+        } else if (!content.endsWith(" ")) {
+          linter.addError(
+            filename,
+            index + 1,
+            `Statement block should have a space before '%}': "${fullMatch}"`
+          );
+        }
+      }
+    });
+  },
 });

@@ -11,7 +11,7 @@
         </div>
     {% endfor %}
     {# Erreur: variable non définie et filtre mal écrit #}
-    <p>{{ undefined_var | safe| upper }}</p>
+    <p>{{ undefined_var | safe | upper | abs }}</p>
 
     {% include 'footer.html' %}
 
