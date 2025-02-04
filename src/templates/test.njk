@@ -11,7 +11,7 @@
         </div>
     {% endfor %}
     {# Erreur: variable non définie et filtre mal écrit #}
-    <p>{{ undefined_var|upppercase }}</p>
+    <p>{{ undefined_var | safe| upper }}</p>
 
     {% include 'footer.html' %}
 
@@ -60,6 +60,6 @@ The result is
 
 {% from "forms.html" import field, label as description %}
 
-{# {% if hfdssd %} #}
+{% if hfdssd %}
 
 {% endif %}

@@ -20,6 +20,7 @@ export interface RulesConfig {
   checkVariables?: boolean;
   checkMacros?: boolean;
   checkSyntax?: boolean;
+  checkFilters?: boolean;
   [key: string]: boolean | undefined;
 }
 
