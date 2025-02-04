@@ -13,8 +13,7 @@ async function main() {
         ignore: config.ignore || ["node_modules/**", "dist/**"],
         extensions: config.extensions || [".njk", ".html"],
         rules: config.rules || {},
-        customFilters: config.customFilters || [],
-        defaultFilters: config.defaultFilters || []
+        customFilters: config.customFilters || []
     });
 
     let targetPath = getTargetPath(args[0]);

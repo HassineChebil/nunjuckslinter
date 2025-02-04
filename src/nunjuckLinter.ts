@@ -21,6 +21,7 @@ export class NunjucksLinter implements LinterInterface {
             rules: {
                 checkBlockStructure: true,
                 checkSyntaxBalance: true,
+                checkFilters: true,
                 ...(typeof options.rules === "object" ? options.rules : {}),
             },
         };

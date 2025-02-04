@@ -1,7 +1,7 @@
 {
     "ignore": ["node_modules/**", "dist/**", "build/**"],
     "extensions": [".njk", ".html"],
-    "customFilters": ["upppercase"],
+    "customFilters": ["defaultsWith", "lookup"],
     "rules": {
         "checkSyntax": true,
         "checkBlockStructure": true,
