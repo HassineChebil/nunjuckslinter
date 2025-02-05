@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { glob } from "glob";
-import { createLintingRules } from "./rules/lintingRules";
-import { LinterInterface, LinterOptions, LintError } from "./interfaces/types";
-import { DEFAULT_FILTERS } from "./constants/constants";
+import { createLintingRules } from "./rules";
+import { LinterInterface, LinterOptions, LintError } from "./interfaces";
+import { DEFAULT_FILTERS } from "./constants";
 
 export class NunjucksLinter implements LinterInterface {
     private errors: LintError[];

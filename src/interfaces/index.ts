@@ -38,7 +38,7 @@ export interface BlockStackItem {
   hasEndDash?: boolean;
 }
 
-export type BlockType = 'if' | 'for' | 'macro' | 'block' | 'set' | 'filter' | 'call' | 'asyncEach' | 'asyncAll';
+type BlockType = 'if' | 'for' | 'macro' | 'block' | 'set' | 'filter' | 'call' | 'asyncEach' | 'asyncAll';
 
 export interface BlockPattern {
     type: BlockType;
