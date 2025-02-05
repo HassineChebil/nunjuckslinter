@@ -43,7 +43,7 @@
     class="{{ params.class }}"
     alt="{{ params.alt }}"
     {{ genPriority(params.importance) | safe }}
-    {% if style|length != 0 %}
+    {% if style | length != 0 %}
     style="{{ style | join('; ') | safe }}"
     {% endif %}
     {{ utils.expandRest(params) | safe }}
@@ -94,7 +94,7 @@
     {% endif %}
 
     {% for ssz, rsz in density %}
-        {% set sizes = (sizes.push((genScreenSize(ssz)|trim)~" "~rsz), sizes) %}
+        {% set sizes = (sizes.push((genScreenSize(ssz) | trim)~" "~rsz), sizes) %}
     {% endfor %}
 
 {% endif %}
