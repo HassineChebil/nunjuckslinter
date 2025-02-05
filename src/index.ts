@@ -2,8 +2,8 @@
 
 import { statSync } from "node:fs";
 import { NunjucksLinter } from "./nunjuckLinter";
-import { argsChecker, getTargetPath } from "./utils/utils";
-import { loadConfig } from "./utils/configLoader";
+import { argsChecker, getTargetPath } from "./utils";
+import { loadConfig } from "./utils";
 
 async function main() {
     const args = argsChecker();

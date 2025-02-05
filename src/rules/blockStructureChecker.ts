@@ -1,7 +1,7 @@
-import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS } from "../constants/patterns";
-import { BlockPattern, BlockStackItem, BlockType, LinterInterface } from "../interfaces/types";
+import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS, SYNTAX_PATTERNS } from "../constants";
+import { BlockPattern, BlockStackItem, LinterInterface } from "../interfaces";
 
-class BlockStructureChecker {
+export class BlockStructureChecker {
   private blockStack: BlockStackItem[] = [];
   private inMultilineComment = false;
   private commentDepth = 0;
@@ -9,8 +9,8 @@ class BlockStructureChecker {
   constructor(private filename: string, private linter: LinterInterface) {}
 
   private handleCommentState(line: string): boolean {
-    const commentStarts = [...line.matchAll(/{#/g)];
-    const commentEnds = [...line.matchAll(/#}/g)];
+    const commentStarts = [...line.matchAll(SYNTAX_PATTERNS.comments.open)];
+    const commentEnds = [...line.matchAll(SYNTAX_PATTERNS.comments.close)];
     const startCount = commentStarts.length;
     const endCount = commentEnds.length;
 
