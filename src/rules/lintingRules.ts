@@ -18,7 +18,6 @@ export const createLintingRules = (
     const blockStack: BlockStackItem[] = [];
     let inMultilineComment = false;
     let commentDepth = 0;
-    // let hasError = false;
 
     const processLine = (line: string, index: number): void => {
       // if (hasError) return;
@@ -405,8 +404,41 @@ export const createLintingRules = (
     // Patterns to check spacing
     const expressionBlockPattern = /\{\{([^}]+)\}\}/g;
     const statementBlockPattern = /\{%(-)?([^}]+?)(-)?%\}/g;
-    const filterChainPattern =
-      /(?:^|\s*)\|[ ]*[a-zA-Z_][a-zA-Z0-9_]*(?:\([^)]*\))?[ ]*/g;
+
+    const checkFilterSpacing = (content: string, index: number) => {
+      const parts = content.trim().split("|");
+
+      // Check variable part (first part)
+      if (!parts[0].endsWith(" ")) {
+        linter.addError(
+          filename,
+          index + 1,
+          `Missing space before filter chain: "${parts[0]}|"`
+        );
+      }
+
+      // Check filters (remaining parts)
+      for (let i = 1; i < parts.length; i++) {
+        const part = parts[i];
+        const isLastFilter = i === parts.length - 1;
+
+        if (!part.startsWith(" ")) {
+          linter.addError(
+            filename,
+            index + 1,
+            `Missing space after '|': "|${part}"`
+          );
+        }
+
+        if (!isLastFilter && !part.endsWith(" ")) {
+          linter.addError(
+            filename,
+            index + 1,
+            `Missing space before '|': "${part}|"`
+          );
+        }
+      }
+    };
 
     lines.forEach((line, index) => {
       if (line.includes("{#")) return;
@@ -424,19 +456,8 @@ export const createLintingRules = (
         }
 
         // Check filter spacing
-        const parts = content.split("|");
-        if (parts.length > 1) {
-          // Skip the first part (variable name)
-          for (let i = 1; i < parts.length; i++) {
-            const part = parts[i];
-            if (!part.startsWith(" ") || !part.endsWith(" ")) {
-              linter.addError(
-                filename,
-                index + 1,
-                `Filter should have spaces before and after: "|${part}|"`
-              );
-            }
-          }
+        if (content.includes("|")) {
+          checkFilterSpacing(content, index);
         }
       }
 
@@ -451,7 +472,7 @@ export const createLintingRules = (
             linter.addError(
               filename,
               index + 1,
-              `Statement block should have a space after '-': "${fullMatch}"`
+              `Statement block should have a space after '{%-': "${fullMatch}"`
             );
           }
         } else if (!content.startsWith(" ")) {
@@ -469,7 +490,7 @@ export const createLintingRules = (
             linter.addError(
               filename,
               index + 1,
-              `Statement block should have a space before '-': "${fullMatch}"`
+              `Statement block should have a space before '-%}': "${fullMatch}"`
             );
           }
         } else if (!content.endsWith(" ")) {
@@ -478,6 +499,11 @@ export const createLintingRules = (
             index + 1,
             `Statement block should have a space before '%}': "${fullMatch}"`
           );
+        }
+
+        // Check filter spacing
+        if (content.includes("|")) {
+          checkFilterSpacing(content, index);
         }
       }
     });
