@@ -85,7 +85,7 @@ export class NunjucksLinter implements LinterInterface {
 
     printResults(): void {
         if (this.errors.length === 0) {
-            console.log("Aucune erreur trouvée! 🎉");
+            console.log("No errors found! 🎉");
             return;
         }
 
@@ -97,7 +97,7 @@ export class NunjucksLinter implements LinterInterface {
             return a.file.localeCompare(b.file);
         });
 
-        console.log(`\n \x1b[31mTrouvé ${sortedErrors.length} problème(s):\x1b[0m \n`);
+        console.log(`\n \x1b[31mFound ${sortedErrors.length} issue(s):\x1b[0m \n`);
 
         sortedErrors.forEach((error) => {
             console.log(`\x1b[32m${error.file}:${error.line}\x1b[0m - \x1b[31m${error.message}\x1b[0m`);

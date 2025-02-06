@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "node dist/index.js lint"
+    "lint": "njklint src/templates",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "author": "Hassine Chebil",
   "license": "MIT",
@@ -14,17 +16,38 @@
   "bin": {
     "njklint": "./dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HassineChebil/nunjucklinter.git"
+  },
+  "keywords": [
+    "nunjucks",
+    "linter",
+    "template",
+    "static-analysis",
+    "code-quality"
+  ],
   "devDependencies": {
     "@types/node": "^22.10.10",
+    "@vitest/coverage-v8": "^3.0.5",
     "biome": "^0.2.2",
     "glob": "^11.0.1",
     "typescript": "^5.7.3",
-    "vite": "^6.0.11"
+    "vite": "^6.0.11",
+    "vitest": "^3.0.5"
   },
   "dependencies": {
     "chalk": "^5.4.1"
   },
   "volta": {
     "node": "22.13.1"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
 }

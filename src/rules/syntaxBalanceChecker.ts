@@ -87,7 +87,6 @@ export class SyntaxBalanceChecker {
   }
 
   private checkUnclosedDelimiters(): void {
-    if (!this.state.inMultilineComment) {
       const delimiters = [
         { type: "braces", open: "{{", stack: this.state.openBraces },
         { type: "tag", open: "{%", stack: this.state.openTags },
@@ -104,20 +103,20 @@ export class SyntaxBalanceChecker {
           );
         }
       });
-    }
   }
 
   public processContent(content: string): void {
     const lines = content.split("\n");
 
     lines.forEach((line, index) => {
+      this.checkDelimiterBalance(line, index, "comments");
+
       if (this.handleComments(line)) return;
 
       const lineWithoutComments = line.replace(/{#.*?#}/g, "");
 
       this.checkDelimiterBalance(lineWithoutComments, index, "braces");
       this.checkDelimiterBalance(lineWithoutComments, index, "tags");
-      this.checkDelimiterBalance(lineWithoutComments, index, "comments");
     });
 
     this.checkUnclosedDelimiters();
