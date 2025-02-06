@@ -1,5 +1,6 @@
 import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS, SYNTAX_PATTERNS } from "../constants";
 import { BlockPattern, BlockStackItem, LinterInterface } from "../interfaces";
+import { endBlockType } from "../utils";
 
 export class BlockStructureChecker {
   private blockStack: BlockStackItem[] = [];
@@ -107,7 +108,7 @@ export class BlockStructureChecker {
         this.linter.addError(
           this.filename,
           index + 1,
-          `Unexpected end${pattern.type} without matching opening tag`
+          `Unexpected ${endBlockType(pattern.type)} without matching opening tag`
         );
         return;
       }
