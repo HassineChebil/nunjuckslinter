@@ -1,6 +1,6 @@
 {
   "name": "nunjucklinter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A linter for nunjuck templating engines",
   "main": "dist/index.js",
   "scripts": {
