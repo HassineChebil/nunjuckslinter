@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HassineChebil/nunjucklinter.git"
+    "url": "git+https://github.com/HassineChebil/nunjuckslinter.git"
   },
   "keywords": [
     "nunjucks",
