@@ -9,7 +9,13 @@ export default defineConfig({
       fileName: 'index'
     },
     rollupOptions: {
-      external: ['node:fs', 'node:path', 'node:path', /node:.*/, 'glob', 'os']
+      external: ['node:fs', 'node:path', 'node:path', /node:.*/, 'glob', 'os'],
+      output: {
+        format: 'es',
+        generatedCode: 'es2015',
+        compact: true,
+        minifyInternalExports: true
+      }
     },
     target: 'node18',
     outDir: 'dist',
