@@ -4,34 +4,33 @@ export const BLOCK_PATTERNS: Record<string, BlockPattern> = {
   block: {
     type: "block",
     hasEnd: true,
-    pattern: /{%\s*block\s+([a-zA-Z][a-zA-Z0-9_-]*)\s*(-)?%}/,
-    endPattern: /{%(-)?(?:\s*)endblock(?:\s+([a-zA-Z][a-zA-Z0-9_-]*))?\s*%}/,
+    pattern: /{%-?\s*block\s+([a-zA-Z][a-zA-Z0-9_-]*)\s*-?%}/,
+    endPattern: /{%-?\s*endblock(?:\s+([a-zA-Z][a-zA-Z0-9_-]*))?\s*-?%}/,
   },
   for: {
     type: "for",
     hasEnd: true,
     pattern: /{%-?\s*for\s+([^%}]+)\s*-?%}/,
     endPattern: /{%-?\s*endfor\s*-?%}/,
-    allowNested: true, // Add this to allow nesting within blocks
+    allowNested: true,
   },
   if: {
     type: "if",
     hasEnd: true,
     pattern: /{%-?\s*if\s+([^%}]+)\s*-?%}/,
     endPattern: /{%-?\s*endif\s*-?%}/,
-    allowNested: true, // Add this to allow nesting within blocks
+    allowNested: true,
   },
   macro: {
     type: "macro",
     hasEnd: true,
-    pattern:
-      /{%-?\s*macro\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(((?:[^(){}[\]]|\{[^{}]*\}|\[[^\[\]]*\])*)\)\s*-?%}/,
+    pattern: /{%-?\s*macro\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(((?:[^(){}[\]]|\{[^{}]*\}|\[[^\[\]]*\])*)\)\s*-?%}/,
     endPattern: /{%-?\s*endmacro\s*-?%}/,
   },
   set: {
     type: "set",
     hasEnd: true,
-    pattern: /{%-?\s*set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=\s*[^%}]+\s*%}|%})/,
+    pattern: /{%-?\s*set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=\s*[^%}]+\s*-?%}|-?%})/,
     endPattern: /{%-?\s*endset\s*-?%}/,
     allowNested: true,
     isMultiline: (match) => !match[0].includes("="),

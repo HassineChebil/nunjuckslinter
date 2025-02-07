@@ -52,7 +52,7 @@ export class BlockStructureChecker {
           name: match[1] || name,
           type: pattern.type,
           line: index + 1,
-          hasEndDash: !!match[2],
+          // hasEndDash: !!match[2],
         });
       }
 
@@ -157,8 +157,8 @@ export class BlockStructureChecker {
     lastBlock: BlockStackItem,
     index: number
   ): void {
-    const endName = match[2]?.trim();
-    const hasStartDash = !!match[1];
+    const endName = match[1]?.trim();
+    // const hasStartDash = !!match[1];
 
     if (endName && endName !== lastBlock.name) {
       this.linter.addError(
@@ -168,16 +168,16 @@ export class BlockStructureChecker {
       );
     }
 
-    if (lastBlock.hasEndDash !== hasStartDash) {
-      const message = lastBlock.hasEndDash
-        ? "opening tag uses '-' but closing tag doesn't"
-        : "closing tag uses '-' but opening tag doesn't";
-      this.linter.addError(
-        this.filename,
-        index + 1,
-        `Whitespace control mismatch: ${message}`
-      );
-    }
+    // if (lastBlock.hasEndDash !== hasStartDash) {
+    //   const message = lastBlock.hasEndDash
+    //     ? "opening tag uses '-' but closing tag doesn't"
+    //     : "closing tag uses '-' but opening tag doesn't";
+    //   this.linter.addError(
+    //     this.filename,
+    //     index + 1,
+    //     `Whitespace control mismatch: ${message}`
+    //   );
+    // }
   }
 
   private checkUnclosedBlocks(): void {
@@ -195,7 +195,7 @@ export class BlockStructureChecker {
   }
 
   public processContent(content: string): void {
-    const lines = content.split("\n");
+    const lines = (content + '\n').split("\n");
 
     lines.forEach((line, index) => {
       if (this.handleCommentState(line)) return;

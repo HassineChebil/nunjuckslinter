@@ -47,6 +47,7 @@ export interface BlockPattern {
     endPattern?: RegExp;
     allowNested?: boolean;
     isMultiline?: (match: RegExpMatchArray) => boolean;
+    ignoreWhitespaceControl?: boolean;
     subTypes?: string[];  // For if/elif/else blocks
 }
 

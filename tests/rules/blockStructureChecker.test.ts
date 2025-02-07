@@ -44,4 +44,15 @@ describe('BlockStructureChecker', () => {
       expect.stringContaining('Block name mismatch')
     )
   })
+
+  it('should detect unclosed set blocks', () => {
+    blockChecker.processContent(`{% set something -%}
+      {{ I put something here }}`)
+    
+    expect(mockLinter.addError).toHaveBeenCalledWith(
+      'test.njk',
+      1,
+      expect.stringContaining('Unclosed set')
+    )
+  })
 })
