@@ -35,6 +35,9 @@ async function main() {
 
         // Print the results
         linter.printResults();
+        if(linter.hasError()) {
+            process.exit(1);
+        }
     } catch (error) {
         if (error instanceof Error) {
             console.error("Error:", error.message);
