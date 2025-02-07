@@ -46,6 +46,7 @@ export interface BlockPattern {
     pattern: RegExp;
     endPattern?: RegExp;
     allowNested?: boolean;
+    isMultiline?: (match: RegExpMatchArray) => boolean;
     subTypes?: string[];  // For if/elif/else blocks
 }
 

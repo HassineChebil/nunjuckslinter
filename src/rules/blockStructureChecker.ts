@@ -1,4 +1,8 @@
-import { BLOCK_PATTERNS, CONDITIONAL_PATTERNS, SYNTAX_PATTERNS } from "../constants";
+import {
+  BLOCK_PATTERNS,
+  CONDITIONAL_PATTERNS,
+  SYNTAX_PATTERNS,
+} from "../constants";
 import { BlockPattern, BlockStackItem, LinterInterface } from "../interfaces";
 import { endBlockType } from "../utils";
 
@@ -40,7 +44,10 @@ export class BlockStructureChecker {
       const match = line.match(pattern.pattern);
       if (!match) continue;
 
-      if (pattern.hasEnd) {
+      if (
+        pattern.hasEnd &&
+        (!pattern.isMultiline || pattern.isMultiline(match))
+      ) {
         this.blockStack.push({
           name: match[1] || name,
           type: pattern.type,
@@ -108,7 +115,9 @@ export class BlockStructureChecker {
         this.linter.addError(
           this.filename,
           index + 1,
-          `Unexpected ${endBlockType(pattern.type)} without matching opening tag`
+          `Unexpected ${endBlockType(
+            pattern.type
+          )} without matching opening tag`
         );
         return;
       }
@@ -173,7 +182,7 @@ export class BlockStructureChecker {
 
   private checkUnclosedBlocks(): void {
     if (!this.inMultilineComment && this.blockStack.length > 0) {
-      this.blockStack.forEach(block => {
+      this.blockStack.forEach((block) => {
         this.linter.addError(
           this.filename,
           block.line,
@@ -187,7 +196,7 @@ export class BlockStructureChecker {
 
   public processContent(content: string): void {
     const lines = content.split("\n");
-    
+
     lines.forEach((line, index) => {
       if (this.handleCommentState(line)) return;
 

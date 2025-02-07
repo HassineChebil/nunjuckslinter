@@ -30,8 +30,11 @@ export const BLOCK_PATTERNS: Record<string, BlockPattern> = {
   },
   set: {
     type: "set",
-    hasEnd: false,
-    pattern: /{%-?\s*set\s+([^%}]+)\s*-?%}/,
+    hasEnd: true,
+    pattern: /{%-?\s*set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=\s*[^%}]+\s*%}|%})/,
+    endPattern: /{%-?\s*endset\s*-?%}/,
+    allowNested: true,
+    isMultiline: (match) => !match[0].includes("="),
   },
   call: {
     type: "call",
