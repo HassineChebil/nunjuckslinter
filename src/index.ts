@@ -9,14 +9,14 @@ async function main() {
     const args = argsChecker();
     const config = await loadConfig(process.cwd());
 
-    const linter = new NunjucksLinter({
+    const linter = new NunjucksLinter(args.shouldFix, {
         ignore: config.ignore || ["node_modules/**", "dist/**"],
         extensions: config.extensions || [".njk", ".html"],
         rules: config.rules || {},
         customFilters: config.customFilters || []
     });
 
-    let targetPath = getTargetPath(args[0]);
+    let targetPath = getTargetPath(args.paths[0]);
 
     try {
         // Check if it's a file or directory

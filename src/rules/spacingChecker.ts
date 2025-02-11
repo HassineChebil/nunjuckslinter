@@ -120,8 +120,55 @@ export class SpacingChecker {
     }
   }
 
-  public processContent(content: string): void {
+  private fixFilterSpacing(content: string): string {
+    const parts = content.trim().split("|");
+    return parts
+      .map((part, index) => {
+        const trimmedPart = part.trim();
+        return index === 0 ? trimmedPart : ` ${trimmedPart}`;
+      })
+      .join(" |");
+  }
+
+  private fixExpressionBlock(line: string): string {
+    return line.replace(this.expressionBlockPattern, (match, content) => {
+      const trimmedContent = content.trim();
+      const fixedContent = trimmedContent.includes("|") 
+        ? this.fixFilterSpacing(trimmedContent)
+        : trimmedContent;
+      return `{{ ${fixedContent} }}`;
+    });
+  }
+
+  private fixStatementBlock(line: string): string {
+    return line.replace(this.statementBlockPattern, (match, startDash, content, endDash) => {
+      const trimmedContent = content.trim();
+      const fixedContent = trimmedContent.includes("|")
+        ? this.fixFilterSpacing(trimmedContent)
+        : trimmedContent;
+      const start = startDash ? '{%-' : '{%';
+      const end = endDash ? '-%}' : '%}';
+      return `${start} ${fixedContent} ${end}`;
+    });
+  }
+  private fixContent(contentLines: string[]): string {
+    const lines = contentLines;
+    const fixedLines = lines.map((line, index) => {
+      //if (line.includes("{#")) return line;
+      let fixedLine = line;
+      fixedLine = this.fixExpressionBlock(fixedLine);
+      fixedLine = this.fixStatementBlock(fixedLine);
+      return fixedLine;
+    });
+    return fixedLines.join("\n");
+  }
+
+  public processContent(content: string): string | void {
     const lines = content.split("\n");
+
+    if(this.linter.shouldFix) {
+     return this.fixContent(lines)
+    }
 
     lines.forEach((line, index) => {
       if (line.includes("{#")) return;

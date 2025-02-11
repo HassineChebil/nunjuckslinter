@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { globSync } from "glob";
 import { createLintingRules } from "./rules";
@@ -10,7 +10,8 @@ export class NunjucksLinter implements LinterInterface {
   public options: LinterOptions;
   private rules: Record<string, (content: string, filename: string) => void>;
   private blockErrors: Map<string, Set<number>>;
-  constructor(options: Partial<LinterOptions> = {}) {
+  
+  constructor(public shouldFix: boolean, options: Partial<LinterOptions> = {}) {
     this.errors = [];
     this.blockErrors = new Map();
     this.options = {
@@ -62,13 +63,23 @@ export class NunjucksLinter implements LinterInterface {
   lintFile(filepath: string): void {
     try {
       const content = readFileSync(filepath, "utf8");
+      let fixedContent = content;
 
       // Filter and execute only enabled rules
       Object.entries(this.rules)
         .filter(([ruleName]) => this.options.rules[ruleName] === true)
         .forEach(([_, ruleFunction]) => {
-          ruleFunction(content, filepath);
+          const result = ruleFunction(fixedContent, filepath);
+          if (this.shouldFix && result) {
+            fixedContent = result;
+          }
         });
+
+
+      if (this.shouldFix && content !== fixedContent) {
+        writeFileSync(filepath, fixedContent, "utf8");
+        console.log(`Fixed issues in ${filepath}`);
+      }
     } catch (error) {
       console.error(`Erreur lors de l'analyse de ${filepath}:`, error);
     }

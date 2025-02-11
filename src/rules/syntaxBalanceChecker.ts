@@ -14,6 +14,20 @@ export class SyntaxBalanceChecker {
     commentDepth: 0,
   };
 
+  private readonly delimiterConfig = {
+    braces: {
+      open: "{{",
+      close: "}}",
+      pattern: { open: /\{\{/g, close: /\}\}/g },
+    },
+    tags: { open: "{%", close: "%}", pattern: { open: /\{%/g, close: /%\}/g } },
+    comments: {
+      open: "{#",
+      close: "#}",
+      pattern: { open: /\{#/g, close: /#\}/g },
+    },
+  };
+
   constructor(private filename: string, private linter: LinterInterface) {}
 
   private handleComments(line: string): boolean {
@@ -53,12 +67,6 @@ export class SyntaxBalanceChecker {
     const stateKey = `open${
       type.charAt(0).toUpperCase() + type.slice(1)
     }` as keyof SyntaxBalanceState;
-    const delimiters = {
-      braces: { open: "{{", close: "}}" },
-      tags: { open: "{%", close: "%}" },
-      comments: { open: "{#", close: "#}" },
-    };
-
     if (openMatches > 0) {
       (this.state[stateKey] as DelimiterPosition[]).push({
         line: index + 1,
@@ -71,7 +79,7 @@ export class SyntaxBalanceChecker {
         this.linter.addError(
           this.filename,
           index + 1,
-          `Unexpected closing ${type} '${delimiters[type].close}' without matching opening ${type}`
+          `Unexpected closing ${type} '${this.delimiterConfig[type].close}' without matching opening ${type}`
         );
         return;
       }
@@ -87,22 +95,22 @@ export class SyntaxBalanceChecker {
   }
 
   private checkUnclosedDelimiters(): void {
-      const delimiters = [
-        { type: "braces", open: "{{", stack: this.state.openBraces },
-        { type: "tag", open: "{%", stack: this.state.openTags },
-        { type: "comment", open: "{#", stack: this.state.openComments },
-      ];
+    const delimiters = [
+      { type: "braces", open: "{{", stack: this.state.openBraces },
+      { type: "tag", open: "{%", stack: this.state.openTags },
+      { type: "comment", open: "{#", stack: this.state.openComments },
+    ];
 
-      delimiters.forEach(({ type, open, stack }) => {
-        if (stack.length > 0) {
-          const totalUnclosed = stack.reduce((sum, pos) => sum + pos.count, 0);
-          this.linter.addError(
-            this.filename,
-            stack[0].line,
-            `Unclosed ${type} '${open}': missing ${totalUnclosed} closing ${type}(s)`
-          );
-        }
-      });
+    delimiters.forEach(({ type, open, stack }) => {
+      if (stack.length > 0) {
+        const totalUnclosed = stack.reduce((sum, pos) => sum + pos.count, 0);
+        this.linter.addError(
+          this.filename,
+          stack[0].line,
+          `Unclosed ${type} '${open}': missing ${totalUnclosed} closing ${type}(s)`
+        );
+      }
+    });
   }
 
   public processContent(content: string): void {

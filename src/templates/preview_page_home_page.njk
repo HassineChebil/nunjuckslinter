@@ -1,0 +1,102 @@
+{% extends "../../common/njk/not_connected.basic.page.njk" %}
+{% import "../../common/njk/macros.njk" as utils with context %}
+{% set currentCompName = "preview_page_home_page" %}
+{% block title %}
+    {{ currentCompName }}
+{% endblock %}
+{{ PathUtils.setParams({
+    root:{
+        templateVariation: {
+            is_homepage: true
+        }
+    }
+}) }}
+{% set heroBannerHtml -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hero-banner"
+    }) }}
+{%- endset %}
+
+{% set heroBannerOffreHtml -%}
+    {{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hero-banner-offre"
+    }) }}
+{%- endset %}
+
+{% set currentOffersHtml -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-current-offers"
+    }) }}
+{%- endset %}
+{% set hpAdvantages -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-avantages"
+    }) }}
+{%- endset %}
+{% set hpReinsurance -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-reinsurance"
+    }) }}
+{%- endset %}
+{% set hpHbPro -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-hb-pro"
+    }) }}
+{%- endset %}
+{% set hpBecomeCustomer -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-become-customer"
+    }) }}
+{%- endset %}
+
+{% set hpInfoBlock -%}
+    {{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-info-block"
+    }) }}
+{%- endset %}
+
+{% set hpCarousel -%}
+    {{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-carousel"
+    }) }}
+{%- endset %}
+
+{% set hpCardComparator -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_hp-card-comparator"
+    }) }}
+{%- endset %}
+{% set footnotes -%}
+{{ utils.useComponentFor({
+        parentComp: currentCompName,
+        compName:"comp_aem_footnotes"
+    }) }}
+{%- endset %}
+
+
+
+
+{% block pageContent %}
+  {{ currentCompHtml | safe }}
+  {{ heroBannerHtml | safe }}
+  {{ heroBannerOffreHtml | safe }}
+  {{ currentOffersHtml | safe }}
+  {{ hpAdvantages | safe }}
+  {{ hpCardComparator | safe }}
+  {{ hpInfoBlock | safe }}
+  {{ hpCarousel | safe }}
+  {{ hpReinsurance | safe }}
+  {{ hpHbPro | safe }}
+  {{ hpBecomeCustomer | safe }}
+  {{ footnotes | safe }}
+{% endblock pageContent %}

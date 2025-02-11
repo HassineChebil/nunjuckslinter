@@ -1,3 +1,8 @@
+export interface ArgsResult {
+  paths: string[];
+  shouldFix: boolean;
+}
+
 export interface LinterOptions {
   ignore: string[];
   extensions: string[];
@@ -9,9 +14,10 @@ export interface LinterOptions {
 export interface LinterInterface {
   addError: (filename: string, line: number, message: string) => void;
   options: {
-      defaultFilters: string[];
-      customFilters: string[];
+    defaultFilters: string[];
+    customFilters: string[];
   };
+  shouldFix: boolean;
 }
 
 export interface RulesConfig {
@@ -38,17 +44,26 @@ export interface BlockStackItem {
   hasEndDash?: boolean;
 }
 
-type BlockType = 'if' | 'for' | 'macro' | 'block' | 'set' | 'filter' | 'call' | 'asyncEach' | 'asyncAll';
+type BlockType =
+  | "if"
+  | "for"
+  | "macro"
+  | "block"
+  | "set"
+  | "filter"
+  | "call"
+  | "asyncEach"
+  | "asyncAll";
 
 export interface BlockPattern {
-    type: BlockType;
-    hasEnd: boolean;
-    pattern: RegExp;
-    endPattern?: RegExp;
-    allowNested?: boolean;
-    isMultiline?: (match: RegExpMatchArray) => boolean;
-    ignoreWhitespaceControl?: boolean;
-    subTypes?: string[];  // For if/elif/else blocks
+  type: BlockType;
+  hasEnd: boolean;
+  pattern: RegExp;
+  endPattern?: RegExp;
+  allowNested?: boolean;
+  isMultiline?: (match: RegExpMatchArray) => boolean;
+  ignoreWhitespaceControl?: boolean;
+  subTypes?: string[]; // For if/elif/else blocks
 }
 
 export interface MacroStackItem {

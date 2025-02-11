@@ -9,7 +9,8 @@ npm install nunjucklinter
 
 ## Usage
 ```bash
-npx njklint <path-to-template>
+npx njklint <path-to-template> # Check for issues
+npx njklint --fix <path-to-template> # Fix spacing issues automatically
 ```
 
 ## Configuration
@@ -70,11 +71,26 @@ Create a ```.njklintrc``` or ```njklint.config.json``` file in your project root
 {{ title | unknown }}  {# Error: Unknown filter #}
 ```
 
-### Spacing Rules
+### Spacing Rules and Auto-fix
 ```njk
-{{ title | upper }}  {# Valid #}
-{{ title | unknown }}  {# Error: Unknown filter #}
+# Before fix
+{{value|upper}}
+{%if condition%}
+{%-set name='John'-%}
+
+# After running with --fix
+{{ value | upper }}
+{% if condition %}
+{%- set name = 'John' -%}
 ```
+
+## Auto-fix Feature
+The ```--fix``` option automatically fixes spacing issues in your templates.
+> **Warning:** This feature is experimental and may not cover all cases. Use with caution.
+
+> **Note:** SyntaxeBalance en Structural fixes will be added in the future.
+## Custom Filters
+You can add custom filters to the linter by providing their names in the ```customFilters``` array in the configuration file.
 
 ## Contributing
 Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.

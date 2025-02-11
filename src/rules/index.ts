@@ -10,13 +10,13 @@ export const createLintingRules = (
   checkBlockStructure: (content: string, filename: string): void => {
     new BlockStructureChecker(filename, linter).processContent(content);
   },
-  checkSyntaxBalance: (content: string, filename: string): void => {
+  checkSyntaxBalance: (content: string, filename: string): string | void => {
     new SyntaxBalanceChecker(filename, linter).processContent(content);
   },
   checkFilters: (content: string, filename: string): void => {
     new FilterChecker(filename, linter).processContent(content);
   },
-  checkSpacing: (content: string, filename: string): void => {
-    new SpacingChecker(filename, linter).processContent(content);
+  checkSpacing: (content: string, filename: string): string | void => {
+    return new SpacingChecker(filename, linter).processContent(content);
   },
 });

@@ -52,7 +52,6 @@ export class BlockStructureChecker {
           name: match[1] || name,
           type: pattern.type,
           line: index + 1,
-          // hasEndDash: !!match[2],
         });
       }
 
@@ -158,7 +157,6 @@ export class BlockStructureChecker {
     index: number
   ): void {
     const endName = match[1]?.trim();
-    // const hasStartDash = !!match[1];
 
     if (endName && endName !== lastBlock.name) {
       this.linter.addError(
@@ -167,17 +165,6 @@ export class BlockStructureChecker {
         `Block name mismatch: ${endName} doesn't match ${lastBlock.name}`
       );
     }
-
-    // if (lastBlock.hasEndDash !== hasStartDash) {
-    //   const message = lastBlock.hasEndDash
-    //     ? "opening tag uses '-' but closing tag doesn't"
-    //     : "closing tag uses '-' but opening tag doesn't";
-    //   this.linter.addError(
-    //     this.filename,
-    //     index + 1,
-    //     `Whitespace control mismatch: ${message}`
-    //   );
-    // }
   }
 
   private checkUnclosedBlocks(): void {

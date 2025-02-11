@@ -6,11 +6,11 @@
 {% block title %}{{ currentCompName }}{% endblock %}
 
 {% block body -%}
-    {% set style = "position:absolute; background-color: orange; margin-left: -200px; width: 200px" %}
-    <h1 class="pam mtn" style="{{ style }}">Mode proxy</h1>
-    {#----------#}
-    {{ super() }}
-    {#----------#}
+{% set style = "position:absolute; background-color: orange; margin-left: -200px; width: 200px" %}
+<h1 class="pam mtn" style="{{ style }}">Mode proxy</h1>
+{#----------#}
+{{ super() }}
+{#----------#}
 {%- endblock body %}
 
 
